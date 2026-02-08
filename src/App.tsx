@@ -94,7 +94,7 @@ function App() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <ShieldCheck className="w-5 h-5 text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight">PortMaster</h1>
+          <h1 className="text-xl font-bold tracking-tight">PortWarden</h1>
         </div>
 
         <nav className="flex flex-col gap-2">

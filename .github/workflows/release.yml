@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__ # tauri-action replaces this with the version in cargo.toml
-          releaseName: 'PortMaster v__VERSION__'
+          releaseName: 'PortWarden v__VERSION__'
           releaseBody: 'See the assets below for the latest installers.'
           releaseDraft: true
           prerelease: false
