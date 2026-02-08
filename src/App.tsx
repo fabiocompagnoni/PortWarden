@@ -27,9 +27,10 @@ interface ForwardRule {
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
+import { SettingsView } from "@/components/SettingsView";
 
 function App() {
-  const [activeView, setActiveView] = useState<'ports' | 'forwarding'>('ports');
+  const [activeView, setActiveView] = useState<'ports' | 'forwarding' | 'settings'>('ports');
   const [activePorts, setActivePorts] = useState<PortInfo[]>([]);
   const [rules, setRules] = useState<ForwardRule[]>([]);
   const [filter, setFilter] = useState("");
@@ -118,7 +119,11 @@ function App() {
               <ArrowRightLeft className="w-4 h-4" />
               Port Forwarding
             </Button>
-            <Button variant="ghost" className="justify-start gap-3 h-11 px-4 text-muted-foreground hover:text-primary">
+            <Button
+              variant={activeView === 'settings' ? "secondary" : "ghost"}
+              className={`justify-start gap-3 h-11 px-4 ${activeView === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-primary'}`}
+              onClick={() => setActiveView('settings')}
+            >
               <Settings className="w-4 h-4" />
               Settings
             </Button>
@@ -157,11 +162,12 @@ function App() {
 
           <ScrollArea className="flex-1">
             <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 pb-12">
-              {activeView === 'ports' ? (
+              {activeView === 'ports' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <ActivePortsView ports={filteredPorts} />
                 </div>
-              ) : (
+              )}
+              {activeView === 'forwarding' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <PortForwardingView
                     rules={rules}
@@ -169,6 +175,9 @@ function App() {
                     onStopForward={handleStopForward}
                   />
                 </div>
+              )}
+              {activeView === 'settings' && (
+                <SettingsView />
               )}
             </div>
           </ScrollArea>
