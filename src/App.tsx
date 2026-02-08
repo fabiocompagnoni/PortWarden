@@ -99,6 +99,18 @@ function App() {
     }
   };
 
+  const handleTerminateProcess = async (pid: number) => {
+    try {
+      await invoke("kill_process", { pid });
+      toast.success(`Process ${pid} terminated`);
+      fetchPorts();
+    } catch (e) {
+      toast.error("Failed to terminate process", {
+        description: typeof e === 'string' ? e : "Unknown error"
+      });
+    }
+  };
+
   const filteredPorts = activePorts.filter(p =>
     p.port.toString().includes(filter) ||
     p.process_name?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -178,7 +190,7 @@ function App() {
             <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 pb-12">
               {activeView === 'ports' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <ActivePortsView ports={filteredPorts} />
+                  <ActivePortsView ports={filteredPorts} onTerminate={handleTerminateProcess} />
                 </div>
               )}
               {activeView === 'forwarding' && (

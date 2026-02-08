@@ -13,6 +13,7 @@ export interface PortInfo {
 
 interface ActivePortsViewProps {
     ports: PortInfo[];
+    onTerminate: (pid: number) => void;
 }
 
 type SortKey = keyof PortInfo;
@@ -23,7 +24,7 @@ interface SortConfig {
     direction: SortDirection;
 }
 
-export function ActivePortsView({ ports }: ActivePortsViewProps) {
+export function ActivePortsView({ ports, onTerminate }: ActivePortsViewProps) {
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'port', direction: 'asc' });
 
     const sortedPorts = useMemo(() => {
@@ -105,7 +106,13 @@ export function ActivePortsView({ ports }: ActivePortsViewProps) {
                                 <TableCell className="text-muted-foreground font-mono">{p.pid || "-"}</TableCell>
                                 <TableCell className="font-medium">{p.process_name || "-"}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-destructive/10">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-destructive/10"
+                                        onClick={() => p.pid && onTerminate(p.pid)}
+                                        disabled={!p.pid}
+                                    >
                                         Terminate
                                     </Button>
                                 </TableCell>

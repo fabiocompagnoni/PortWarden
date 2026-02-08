@@ -47,6 +47,11 @@ async fn get_forward_rules(state: State<'_, AppState>) -> Result<Vec<ForwardRule
     Ok(rules.clone())
 }
 
+#[tauri::command]
+fn kill_process(pid: i32) -> Result<(), String> {
+    sys::kill_process(pid)
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -92,7 +97,8 @@ fn main() {
             get_active_ports,
             start_forward,
             stop_forward,
-            get_forward_rules
+            get_forward_rules,
+            kill_process
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
