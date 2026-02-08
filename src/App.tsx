@@ -28,6 +28,8 @@ interface ForwardRule {
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SettingsView } from "@/components/SettingsView";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 function App() {
   const [activeView, setActiveView] = useState<'ports' | 'forwarding' | 'settings'>('ports');
@@ -62,6 +64,13 @@ function App() {
 
   const handleStartForward = async (local: string, remote: string) => {
     if (!local || !remote) return;
+
+    // Check if rule already exists for this local port
+    if (rules.some(r => r.local_port === parseInt(local) && r.active)) {
+      toast.error(`Port ${local} is already being forwarded.`);
+      return;
+    }
+
     const rule: ForwardRule = {
       id: Math.random().toString(36).substr(2, 9),
       local_port: parseInt(local),
@@ -70,18 +79,23 @@ function App() {
     };
     try {
       await invoke("start_forward", { rule });
+      toast.success(`Forwarding port ${local} to ${remote}`);
       fetchRules();
     } catch (e) {
-      alert(e);
+      toast.error("Failed to start forwarding", {
+        description: typeof e === 'string' ? e : "Unknown error occurred"
+      });
     }
   };
 
   const handleStopForward = async (id: string) => {
     try {
       await invoke("stop_forward", { id });
+      toast.info("Forwarding rule stopped");
       fetchRules();
     } catch (e) {
       console.error(e);
+      toast.error("Failed to stop rule");
     }
   };
 
@@ -182,6 +196,7 @@ function App() {
             </div>
           </ScrollArea>
         </main>
+        <Toaster />
       </div>
     </ThemeProvider>
   );

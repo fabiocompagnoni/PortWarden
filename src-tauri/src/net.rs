@@ -30,17 +30,15 @@ impl Forwarder {
         }
 
         let local_port = rule.local_port;
+        
+        // Bind early to ensure port is available
+        let listener = TcpListener::bind(format!("0.0.0.0:{}", local_port))
+            .await
+            .map_err(|e| format!("Failed to bind to port {}: {}. Port might be in use.", local_port, e))?;
+
         let remote_address = rule.remote_address.clone();
         
         let handle = tokio::spawn(async move {
-            let listener = match TcpListener::bind(format!("0.0.0.0:{}", local_port)).await {
-                Ok(l) => l,
-                Err(e) => {
-                    eprintln!("Failed to bind to port {}: {}", local_port, e);
-                    return;
-                }
-            };
-
             loop {
                 match listener.accept().await {
                     Ok((mut client, _)) => {
