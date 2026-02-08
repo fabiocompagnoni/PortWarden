@@ -25,6 +25,9 @@ interface ForwardRule {
   active: boolean;
 }
 
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/mode-toggle";
+
 function App() {
   const [activeView, setActiveView] = useState<'ports' | 'forwarding'>('ports');
   const [activePorts, setActivePorts] = useState<PortInfo[]>([]);
@@ -88,86 +91,90 @@ function App() {
   );
 
   return (
-    <div className="flex h-screen bg-background text-foreground font-sans selection:bg-primary/20 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="hidden md:flex w-64 border-r bg-card/50 backdrop-blur-xl flex-col p-6 gap-8 shrink-0">
-        <div className="flex items-center gap-3 px-2">
-          {/* Logo */}
-          <img src="/app-icon.png" alt="PortWarden Logo" className="w-8 h-8 rounded-lg shadow-sm" />
-          <h1 className="text-xl font-bold tracking-tight">PortWarden</h1>
-        </div>
-
-        <nav className="flex flex-col gap-2">
-          <Button
-            variant={activeView === 'ports' ? "secondary" : "ghost"}
-            className={`justify-start gap-3 h-11 px-4 ${activeView === 'ports' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-primary'}`}
-            onClick={() => setActiveView('ports')}
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            Active Ports
-          </Button>
-          <Button
-            variant={activeView === 'forwarding' ? "secondary" : "ghost"}
-            className={`justify-start gap-3 h-11 px-4 ${activeView === 'forwarding' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-primary'}`}
-            onClick={() => setActiveView('forwarding')}
-          >
-            <ArrowRightLeft className="w-4 h-4" />
-            Port Forwarding
-          </Button>
-          <Button variant="ghost" className="justify-start gap-3 h-11 px-4 text-muted-foreground hover:text-primary">
-            <Settings className="w-4 h-4" />
-            Settings
-          </Button>
-        </nav>
-
-        <div className="mt-auto p-4 rounded-xl bg-primary/5 border border-primary/10">
-          <p className="text-xs font-medium text-primary mb-1 uppercase tracking-wider">System Status</p>
-          <p className="text-sm font-bold">Authenticated as Root</p>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-20 border-b flex items-center justify-between px-8 bg-card/30 backdrop-blur-md shrink-0">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by port, name, or PID..."
-              className="pl-10 h-10 bg-muted/50 border-none ring-offset-transparent focus-visible:ring-1 focus-visible:ring-primary/20 w-full"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <div className="flex h-screen bg-background text-foreground font-sans selection:bg-primary/20 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="hidden md:flex w-64 border-r bg-card/50 backdrop-blur-xl flex-col p-6 gap-8 shrink-0">
+          <div className="flex items-center gap-3 px-2">
+            {/* Logo */}
+            <img src="/icon.png" alt="PortWarden Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+            <h1 className="text-xl font-bold tracking-tight">PortWarden</h1>
           </div>
-          <div className="flex gap-4 ml-4">
-            <Button variant="outline" size="sm" className="hidden sm:flex gap-2 h-10 px-4 border-muted-foreground/20">
-              <Filter className="w-4 h-4" />
-              Filters
+
+          <nav className="flex flex-col gap-2">
+            <Button
+              variant={activeView === 'ports' ? "secondary" : "ghost"}
+              className={`justify-start gap-3 h-11 px-4 ${activeView === 'ports' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-primary'}`}
+              onClick={() => setActiveView('ports')}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              Active Ports
             </Button>
-            <Button size="sm" className="h-10 px-6 shadow-lg shadow-primary/20 whitespace-nowrap" onClick={fetchPorts}>
-              Refresh
+            <Button
+              variant={activeView === 'forwarding' ? "secondary" : "ghost"}
+              className={`justify-start gap-3 h-11 px-4 ${activeView === 'forwarding' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-primary'}`}
+              onClick={() => setActiveView('forwarding')}
+            >
+              <ArrowRightLeft className="w-4 h-4" />
+              Port Forwarding
             </Button>
-          </div>
-        </header>
+            <Button variant="ghost" className="justify-start gap-3 h-11 px-4 text-muted-foreground hover:text-primary">
+              <Settings className="w-4 h-4" />
+              Settings
+            </Button>
+          </nav>
 
-        <ScrollArea className="flex-1">
-          <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 pb-12">
-            {activeView === 'ports' ? (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <ActivePortsView ports={filteredPorts} />
-              </div>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <PortForwardingView
-                  rules={rules}
-                  onStartForward={handleStartForward}
-                  onStopForward={handleStopForward}
-                />
-              </div>
-            )}
+          <div className="mt-auto p-4 rounded-xl bg-primary/5 border border-primary/10">
+            <p className="text-xs font-medium text-primary mb-1 uppercase tracking-wider">System Status</p>
+            <p className="text-sm font-bold">Authenticated as Root</p>
           </div>
-        </ScrollArea>
-      </main>
-    </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-w-0">
+          <header className="h-20 border-b flex items-center justify-between px-8 bg-card/30 backdrop-blur-md shrink-0">
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by port, name, or PID..."
+                className="pl-10 h-10 bg-muted/50 border-none ring-offset-transparent focus-visible:ring-1 focus-visible:ring-primary/20 w-full"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-4 ml-4 items-center">
+              <ModeToggle />
+              <div className="h-6 w-px bg-border hidden sm:block" />
+              <Button variant="outline" size="sm" className="hidden sm:flex gap-2 h-10 px-4 border-muted-foreground/20">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+              <Button size="sm" className="h-10 px-6 shadow-lg shadow-primary/20 whitespace-nowrap" onClick={fetchPorts}>
+                Refresh
+              </Button>
+            </div>
+          </header>
+
+          <ScrollArea className="flex-1">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 pb-12">
+              {activeView === 'ports' ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <ActivePortsView ports={filteredPorts} />
+                </div>
+              ) : (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <PortForwardingView
+                    rules={rules}
+                    onStartForward={handleStartForward}
+                    onStopForward={handleStopForward}
+                  />
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </main>
+      </div>
+    </ThemeProvider>
   );
 }
 
